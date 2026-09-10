@@ -1,0 +1,30 @@
+{
+  "name": "visibuild-revizto-middleware",
+  "version": "1.0.0",
+  "private": true,
+  "type": "module",
+  "description": "Middleware that syncs Visibuild visis into Revizto as issues, hostable on Cloudflare Workers.",
+  "engines": {
+    "node": ">=20"
+  },
+  "scripts": {
+    "dev": "wrangler dev",
+    "dev:live": "wrangler dev -c wrangler.local.toml",
+    "deploy": "wrangler deploy",
+    "deploy:live": "wrangler deploy -c wrangler.local.toml",
+    "db:migrate": "wrangler d1 execute visibuild-revizto-middleware --remote --file schema.sql",
+    "db:migrate:local": "wrangler d1 execute visibuild-revizto-middleware --local --file schema.sql",
+    "test": "vitest run",
+    "test:watch": "vitest",
+    "typecheck": "tsc --noEmit"
+  },
+  "dependencies": {
+    "hono": "^4.12.27"
+  },
+  "devDependencies": {
+    "@cloudflare/workers-types": "^4.20260625.1",
+    "typescript": "^6.0.3",
+    "vitest": "^4.1.9",
+    "wrangler": "^4.104.0"
+  }
+}
