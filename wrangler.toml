@@ -1,0 +1,52 @@
+# Cloudflare Worker configuration.
+# See DEPLOY.md for the full from-scratch setup guide.
+
+name = "visibuild-revizto-middleware"
+main = "src/index.ts"
+compatibility_date = "2025-04-01"
+
+# Static assets (CSS, icons) are served straight from ./public.
+# Anything that isn't a file in ./public falls through to the Worker.
+[assets]
+directory = "./public"
+
+# Default Visibuild API base URL (AU/APAC region). This can be overridden in the
+# in-app Settings page; this is only the initial default.
+[vars]
+DEFAULT_VISIBUILD_API_URL = "https://app.apac.visibuild.com/api/core/v1"
+
+# Key-value store holding the editable configuration (API credentials, Revizto
+# OAuth tokens, per-pair mappings) and the hard-cached Visibuild lookups.
+# Create it once with:
+#   npx wrangler kv namespace create CONFIG
+# then paste the printed id below (replacing REPLACE_WITH_YOUR_KV_ID).
+#
+# The namespace title is arbitrary – only `binding = "CONFIG"` matters to the
+# code – so pick another title if that one is taken on your account. Do not
+# share a namespace with another Worker: this app owns the whole `config`
+# document and will overwrite whatever else is stored under that key.
+[[kv_namespaces]]
+binding = "CONFIG"
+id = "REPLACE_WITH_YOUR_KV_ID"
+
+# D1 holds the sync state: project pairs, visi -> issue links, and the run log.
+# Create it once with:
+#   npx wrangler d1 create visibuild-revizto-middleware
+# then paste the printed database_id below, and apply schema.sql:
+#   npm run db:migrate
+[[d1_databases]]
+binding = "DB"
+database_name = "visibuild-revizto-middleware"
+database_id = "REPLACE_WITH_YOUR_D1_ID"
+
+# The sync runs hourly. There is also a "Sync now" button in the UI.
+[triggers]
+crons = ["0 * * * *"]
+
+# Deploying a live instance? Rather than committing your account's resource ids,
+# copy this file to wrangler.local.toml (git-ignored), put the real ids there,
+# and deploy with `npm run deploy:live`. Keep the two files in step when you
+# change anything else here, such as the cron schedule.
+#
+# Secrets (ADMIN_PASSWORD, SESSION_SECRET) are NOT stored here – set them with
+# `npx wrangler secret put <NAME>`. For local dev, put them in .dev.vars.

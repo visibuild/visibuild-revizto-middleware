@@ -1,0 +1,15 @@
+# Local development secrets for `wrangler dev`.
+# Copy this file to `.dev.vars` and fill in real values. NEVER commit `.dev.vars`.
+#
+# In production these are set with `wrangler secret put <NAME>` instead.
+#
+# These two are the ONLY secrets the Worker needs at deploy time. The Visibuild
+# and Revizto credentials are entered in the app's Settings page and stored in
+# KV, so rotating one is a page load rather than a redeploy.
+
+# Password for the admin: connections, project pairs, mappings, manual syncs.
+ADMIN_PASSWORD="change-me-admin"
+
+# Random string used to sign session cookies. Generate one with:
+#   openssl rand -hex 32
+SESSION_SECRET="change-me-to-a-long-random-string"
